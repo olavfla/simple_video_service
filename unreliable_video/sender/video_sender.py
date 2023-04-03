@@ -1,0 +1,40 @@
+from threading import Thread
+import time
+import cv2
+import imutils
+import base64
+
+from middleware.middlewareAPI import *
+
+class VideoSender(Thread):
+    def __init__(self, address, port, hostname, run_event, camera_port):
+        super().__init__()
+        self.setDaemon(True)
+        self.address = address
+        self.port = port
+        self.mw = MiddlewareUnreliable()
+        self.client_id = hostname
+        self.run_event = run_event
+        self.tos = 88
+        self.quality = 40
+        self.delay = 0.05
+
+        self.video = cv2.VideoCapture(camera_port)
+    
+    def encode(self, buffer):
+        return base64.b64encode(buffer)
+
+    def send(self, msg):
+        self.mw.sendto(msg, (self.address, self.port))
+    
+    def start(self):
+        while self.run_event.is_set():
+            _,frame = self.video.read()
+            frame = imutils.resize(frame,width=400)
+            _,buffer = cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,self.quality])
+            
+            message = self.encode(buffer)
+            self.send(message)
+            time.sleep(self.delay)
+            
+            cv2.waitKey(1)
