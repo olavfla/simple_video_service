@@ -1,6 +1,9 @@
 from video_receiver import VideoReceiver
 
+from middleware.middlewareAPI import *
+
 if __name__ == "__main__":
-    receiver = VideoReceiver("0.0.0.0", 5001, "video_receiver")
+    middleware = MiddlewareUnreliable()
+    receiver = VideoReceiver("0.0.0.0", 5001, middleware, "video_receiver")
     receiver.init()
     receiver.listen()

@@ -1,23 +1,17 @@
 from threading import Thread
-from enum import Enum
-import json
 import time
-import socket
 import cv2
 import imutils
 import base64
-import numpy as np
-
-from middleware.middlewareAPI import *
 
 class VideoSender(Thread):
-    def __init__(self, address, port, hostname, run_event, camera_port):
+    def __init__(self, address, port, mw, hostname, run_event, camera_port):
         super().__init__()
         self.setDaemon(True)
 
         self.address = address
         self.port = port
-        self.mw = MiddlewareReliable()
+        self.mw = mw
         self.client_id = hostname
         self.run_event = run_event
         self.tos = 88

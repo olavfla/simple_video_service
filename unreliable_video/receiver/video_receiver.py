@@ -1,20 +1,16 @@
-import time
 import cv2
 import base64
 import numpy as np
 
-from middleware.middlewareAPI import *
-
 class VideoReceiver():
-    def __init__(self, address, port, hostname):
+    def __init__(self, address, port, mw, hostname):
         self.address = address
         self.port = port
-        self.socket = None        
+        self.mw = mw        
         self.client_id = hostname
 
     def init(self):
-        self.socket = MiddlewareUnreliable()
-        self.socket.bind((self.address, self.port))
+        self.mw.bind((self.address, self.port))
 
     def decode_video(self, packet):
         data = base64.b64decode(packet,' /')
@@ -25,7 +21,7 @@ class VideoReceiver():
 
     def listen(self):        
         while True:
-            packet = self.socket.recvfrom()[0]
+            packet = self.mw.recvfrom()[0]
             frame = self.decode_video(packet)
             
             cv2.imshow("RECEIVING VIDEO", frame)
