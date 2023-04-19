@@ -31,7 +31,7 @@ class VideoSender(Thread):
             frame = imutils.resize(frame,width=400)
             _,buffer = cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,self.quality])
             
-            message = self.encode(buffer)
+            message = buffer #self.encode(buffer)
             self.send(message)
             time.sleep(self.delay)
             

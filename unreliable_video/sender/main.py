@@ -6,8 +6,8 @@ from middleware.middlewareAPI import *
 
 if __name__ == "__main__":
     try:
-        dest_address = "192.168.3.10"
-        dest_port = 5002
+        dest_address = "localhost"
+        dest_port = 5001
         middleware = MiddlewareUnreliable()
         host_name = "video_sender"
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
         run_event = threading.Event()
         run_event.set()
 
-        camera_port = 2
+        camera_port = 1
 
         sender = VideoSender(dest_address, dest_port, middleware, host_name, run_event, camera_port)
 

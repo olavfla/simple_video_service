@@ -13,17 +13,12 @@ class VideoReceiver():
         self.mw.bind((self.address, self.port))
 
     def decode_video(self, packet):
-        data = base64.b64decode(packet,' /')
-        np_data = np.fromstring(data,dtype=np.uint8)
-        frame = cv2.imdecode(np_data,1)
+        return cv2.imdecode(np.frombuffer(packet, dtype=np.uint8),1)
 
-        return frame
-
-    def listen(self):        
+    def listen(self):
         while True:
             packet = self.mw.recvfrom()[0]
             frame = self.decode_video(packet)
             
             cv2.imshow("RECEIVING VIDEO", frame)
             cv2.waitKey(1)
-

@@ -10,17 +10,18 @@ class VideoReceiver():
         self.mw = mw
         self.connection = None
         self.client_id = hostname
+        self.packetbuf = b""
 
     def init(self):
         self.mw.bind((self.address, self.port))
         self.mw.listen()
 
     def decode_video(self, packet):
-        decoded = base64.b64decode(packet,' /')
-        data = np.fromstring(decoded,dtype=np.uint8)
-        frame = cv2.imdecode(data,1)
+        # decoded = base64.b64decode(packet,' /')
+        # data = np.fromstring(decoded,dtype=np.uint8)
+        # frame = cv2.imdecode(data,1)
 
-        return frame
+        return cv2.imdecode(np.frombuffer(packet, dtype=np.uint8),1)
 
     def listen(self):        
         while True:
@@ -28,7 +29,12 @@ class VideoReceiver():
                 self.connection, addr = self.mw.accept()
             
             packet = self.connection.recv(self.buffer_size)
-            frame = self.decode_video(packet)
+            self.packetbuf += packet
+            if packet[-2:] == b'\xff\xd9':
+                frame = self.decode_video(self.packetbuf)
+                self.packetbuf = b""
+            else:
+                continue
 
             if frame is not None:
                 cv2.imshow("RECEIVING VIDEO", frame)
